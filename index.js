@@ -46,7 +46,6 @@ const clampPosition = (value, start, end) => {
 let moveDirections = ["left", "right", "up", "down"];
 let moveDirection = moveDirections[randomIntInRange(0, moveDirections.length)];
 
-console.log(moveDirection);
 
 let spawnPadding = 5;
 let blocksCount = config.xBlock * config.yBlock;
@@ -113,11 +112,9 @@ const createSnakePart = (snake) => {
 
 const followHead = (positionToMove, currentPartIndex) => {
   if (currentPartIndex >= snake.length) {
-    console.log("end");
     return;
   };
 
-  console.log("work");
 
   let currentPart = snake[currentPartIndex];
   let currentPartPosition = { ...currentPart.position };
@@ -187,16 +184,17 @@ const moveSnakeHead = () => {
 
     if (x === checkX && y === checkY) {
       createSnakePart(snake);
-      apples[i].element.remove();
       gameScore.innerHTML = `Score : ${snake.length - 1}`
+      apples[i].element.remove();
+      apples.splice(i, 1);
+      spawnApple();
+      break;
     }
   }
 
   followHead(oldHeadPosition, 1);
 }
 
-let appleLifeTime = 10;
-let appleRemoveQueue = [];
 function spawnApple() {
   let spawnPosition = { x: 0 ,y: 0 };
   let avaliable = [];
@@ -215,10 +213,8 @@ function spawnApple() {
 
   if (trulyAvaliable.length > 0) {
     let randomAvaiable = avaliable[randomIntInRange(0, trulyAvaliable.length)];
-    console.log(randomAvaiable)
     spawnPosition = randomAvaiable;
 
-    console.log(spawnPosition);
     blocks[(spawnPosition.y * config.xBlock) + spawnPosition.x].isThereAnApple = true;
 
     let apple = document.createElement("div");
@@ -238,7 +234,6 @@ function spawnApple() {
     }
 
     apples.push(appleData);
-    appleRemoveQueue.push(appleData);
 
     game.appendChild(apple);
 
@@ -279,21 +274,6 @@ let moveInterval = setInterval(() => {
   moveSnakeHead();
 }, 100);
 
-let spawnAppleInterval = setInterval(() => {
-  if (gameEnd) return;
-
-  spawnApple();
-}, (appleLifeTime / 10) * 1000);
-
-let removeAppleInterval = setInterval(() => {
-  let queueHead = appleRemoveQueue.shift();
-
-  if (queueHead && queueHead.element && queueHead.element.parentNode) {
-    blocks[(queueHead.position.y * config.xBlock) + queueHead.position.x].isThereAnApple = false;
-    queueHead.element.remove();
-  }
-}, appleLifeTime * 1000);
-
 let allowedKeys = "adws";
 window.addEventListener("keydown", (event) => {
   let inputKey = event.key;
@@ -320,6 +300,4 @@ window.addEventListener("keydown", (event) => {
     default:
       console.error("Didn't handle this direction: ", moveDirection);
   }
-  
-  console.log(moveDirection);
 });
