@@ -6,7 +6,7 @@
 }
 
 .game-container {
-  background-color: gray;
+  background-color: red;
   height: 100vh;
   display: flex;
   flex-direction: column;
